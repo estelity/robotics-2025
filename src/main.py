@@ -11,6 +11,10 @@
 from vex import *
 
 brain = Brain()
+left_motor = Motor(Ports.PORT1, GearSetting.RATIO_18_1, False)
+right_motor = Motor(Ports.PORT10, GearSetting.RATIO_18_1, True)
+
+controller = Controller()
 
 def autonomous():
     brain.screen.clear_screen()
@@ -22,6 +26,12 @@ def user_control():
     brain.screen.print("driver control")
     # place driver control in this while loop
     while True:
+        # arcade drive
+        forward = controller.axis3.position()
+        turn = controller.axis1.position()
+        left_motor.spin(DirectionType.FORWARD, forward + turn, VelocityUnits.PERCENT)
+        right_motor.spin(DirectionType.FORWARD, forward - turn, VelocityUnits.PERCENT)
+
         wait(20, MSEC)
 
 # create competition instance
