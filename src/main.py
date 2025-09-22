@@ -11,10 +11,14 @@
 from vex import *
 
 brain = Brain()
-left_motor = Motor(Ports.PORT1, GearSetting.RATIO_18_1, False)
-right_motor = Motor(Ports.PORT10, GearSetting.RATIO_18_1, True)
-
 controller = Controller()
+
+left_motor_front= Motor(Ports.PORT20, GearSetting.RATIO_18_1, False)
+left_motor_back = Motor(Ports.PORT19, GearSetting.RATIO_18_1, False)
+right_motor_front= Motor(Ports.PORT13, GearSetting.RATIO_18_1, False)
+right_motor_back = Motor(Ports.PORT12, GearSetting.RATIO_18_1, False)
+
+intake = Motor(Ports.PORT10, GearSetting.RATIO_18_1, False)
 
 def autonomous():
     brain.screen.clear_screen()
@@ -27,10 +31,21 @@ def user_control():
     # place driver control in this while loop
     while True:
         # arcade drive
-        forward = controller.axis3.position()
-        turn = controller.axis1.position()
-        left_motor.spin(DirectionType.FORWARD, forward + turn, VelocityUnits.PERCENT)
-        right_motor.spin(DirectionType.FORWARD, forward - turn, VelocityUnits.PERCENT)
+        forward = controller.axis1.position()
+        turn = controller.axis3.position()
+
+        left_motor_front.spin(DirectionType.REVERSE, forward + turn, VelocityUnits.PERCENT)
+        left_motor_back.spin(DirectionType.REVERSE, forward + turn, VelocityUnits.PERCENT)
+        right_motor_front.spin(DirectionType.REVERSE, forward - turn, VelocityUnits.PERCENT)
+        right_motor_back.spin(DirectionType.REVERSE, forward - turn, VelocityUnits.PERCENT)
+
+        if controller.buttonR1.pressing():
+            intake_speed = 100
+        elif controller.buttonR2.pressing():
+            intake_speed = -100
+        else:
+            intake_speed = 0
+        intake.spin(DirectionType.FORWARD, intake_speed, VelocityUnits.PERCENT)
 
         wait(20, MSEC)
 
