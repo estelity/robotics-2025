@@ -4,7 +4,7 @@
 # 	Author:       grace.shen                                                   #
 # 	Created:      9/15/2025, 8:47:42 PM                                        #
 # 	Description:  V5 project                                                   #
-#                                                                              #
+#                                                                              #go
 # ---------------------------------------------------------------------------- #
 
 # Library imports
@@ -40,12 +40,15 @@ def user_control():
         right_motor_back.spin(DirectionType.REVERSE, forward - turn, VelocityUnits.PERCENT)
 
         if controller.buttonR1.pressing():
+            direction = DirectionType.FORWARD
             intake_speed = 100
         elif controller.buttonR2.pressing():
-            intake_speed = -100
+            direction = DirectionType.REVERSE
+            intake_speed = 100
         else:
+            direction = DirectionType.FORWARD
             intake_speed = 0
-        intake.spin(DirectionType.FORWARD, intake_speed, VelocityUnits.PERCENT)
+        intake.spin(direction, intake_speed, VelocityUnits.PERCENT)
 
         wait(20, MSEC)
 
