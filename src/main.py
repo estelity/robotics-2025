@@ -21,8 +21,10 @@ right_motor_back = Motor(Ports.PORT19, GearSetting.RATIO_18_1, False)
 left_motors = MotorGroup(left_motor_front, left_motor_back)
 right_motors = MotorGroup(right_motor_front, right_motor_back)
 
-intake = Motor(Ports.PORT3, GearSetting.RATIO_18_1, False)
-intake2 = Motor(Ports.PORT2, GearSetting.RATIO_18_1, False)
+intake = Motor(Ports.PORT2, GearSetting.RATIO_18_1, False)
+intake2 = Motor(Ports.PORT3, GearSetting.RATIO_18_1, False)
+
+shoot = Motor(Ports.PORT18, GearSetting.RATIO_18_1, False)
 
 solenoidA = DigitalOut(brain.three_wire_port.a)
 
@@ -46,6 +48,22 @@ def drive_reverse(velocity, wait_time):
     right_motors.spin(REVERSE, velocity, VelocityUnits.PERCENT)
     wait(wait_time, MSEC)
 
+def intake_in():
+    intake.spin(REVERSE, 100, VelocityUnits.PERCENT)
+    intake2.spin(REVERSE, 100, VelocityUnits.PERCENT)
+
+def intake_out():
+    intake.spin(FORWARD, 100, VelocityUnits.PERCENT)
+    intake2.spin(FORWARD, 100, VelocityUnits.PERCENT)
+
+def intake_stop():
+    intake.stop()
+    intake2.stop()
+
+def motors_stop():
+    left_motors.stop()
+    right_motors.stop()
+
 def autonomous_right():
     brain.screen.clear_screen()
     brain.screen.print("autonomous right side code")
@@ -54,24 +72,36 @@ def autonomous_right():
     # pneumatics up, go to center balls
     solenoidA.set(False)
 
-    # intake.spin(FORWARD, 100, VelocityUnits.PERCENT)
-    # intake2.spin(FORWARD, 100, VelocityUnits.PERCENT)
-    drive_forward(65, 1200)
+    intake_in()
+    drive_forward(65, 675)
+    turn_right(20,165)
+    drive_forward(65,750)
+    intake_stop()
+    motors_stop()
 
     # turn a little to the left and pick up group of 3
-    turn_left(20, 500)
+    drive_reverse(50,100)
+    turn_left(23, 750)
 
     # put one into the low goal
-    drive_forward(10, 300)
+    drive_forward(40, 500)
+    motors_stop()
+    intake_out()
+    wait(2000, MSEC)
+    intake_stop()
 
     # grab as many as possible from the loader
-    drive_reverse(75, 750)
+    drive_reverse(75, 900)
 
     turn_right(55, 500)
 
-    drive_forward(60, 300)
+    drive_forward(50, 225)
 
-    turn_right(35, 500)
+    turn_right(35, 600)
+
+    solenoidA.set(True)
+
+    solenoidA.set(False)
 
 
     # fill the high gaol
@@ -130,20 +160,31 @@ def user_control():
         right_motor_front.spin(DirectionType.REVERSE, forward - turn, VelocityUnits.PERCENT)
         right_motor_back.spin(DirectionType.REVERSE, forward - turn, VelocityUnits.PERCENT)
 
-        if controller.buttonR2.pressing():
+        if controller.buttonL2.pressing():
             direction = DirectionType.FORWARD
+            shoot_speed = 100
+        elif controller.buttonL1.pressing():
+            direction = DirectionType.REVERSE
+            shoot_speed = 100
+        else:
+            direction = DirectionType.FORWARD
+            shoot_speed = 0
+        shoot.spin(direction, shoot_speed, VelocityUnits.PERCENT)
+
+        if controller.buttonR2.pressing():
+            direction2 = DirectionType.FORWARD
             intake_speed = 100
             intake2_speed = 100
         elif controller.buttonR1.pressing():
-            direction = DirectionType.REVERSE
+            direction2 = DirectionType.REVERSE
             intake_speed = 100
             intake2_speed = 100
         else:
-            direction = DirectionType.FORWARD
+            direction2 = DirectionType.FORWARD
             intake_speed = 0
             intake2_speed = 0
-        intake.spin(direction, intake_speed, VelocityUnits.PERCENT)
-        intake2.spin(direction, intake2_speed, VelocityUnits.PERCENT)
+        intake.spin(direction2, intake_speed, VelocityUnits.PERCENT)
+        intake2.spin(direction2, intake2_speed, VelocityUnits.PERCENT)
 
         if controller.buttonA.pressing():
             loaderDown = not loaderDown
