@@ -14,7 +14,7 @@ brain = Brain()
 controller = Controller()
 
 left_motor_front= Motor(Ports.PORT4, GearSetting.RATIO_18_1, False)
-left_motor_back = Motor(Ports.PORT12, GearSetting.RATIO_18_1, False)
+left_motor_back = Motor(Ports.PORT20, GearSetting.RATIO_18_1, False)
 right_motor_front= Motor(Ports.PORT10, GearSetting.RATIO_18_1, False)
 right_motor_back = Motor(Ports.PORT19, GearSetting.RATIO_18_1, False)
 
@@ -22,7 +22,7 @@ left_motors = MotorGroup(left_motor_front, left_motor_back)
 right_motors = MotorGroup(right_motor_front, right_motor_back)
 
 intake = Motor(Ports.PORT2, GearSetting.RATIO_18_1, False)
-intake2 = Motor(Ports.PORT3, GearSetting.RATIO_18_1, False)
+intake2 = Motor(Ports.PORT17, GearSetting.RATIO_18_1, False)
 
 shoot = Motor(Ports.PORT18, GearSetting.RATIO_18_1, False)
 
@@ -50,20 +50,21 @@ def drive_reverse(velocity, wait_time):
 
 def intake_in():
     intake.spin(REVERSE, 100, VelocityUnits.PERCENT)
-    intake2.spin(REVERSE, 100, VelocityUnits.PERCENT)
+    intake2.spin(REVERSE, 70, VelocityUnits.PERCENT)
 
 def intake_out():
-    intake.spin(FORWARD, 55, VelocityUnits.PERCENT)
-    intake2.spin(FORWARD, 55, VelocityUnits.PERCENT)
+    intake.spin(FORWARD, 35, VelocityUnits.PERCENT)
+    intake2.spin(FORWARD, 35, VelocityUnits.PERCENT)
+    shoot.spin(FORWARD, 35, VelocityUnits.PERCENT)
 
 def intake_stop():
     intake.stop()
     intake2.stop()
 
 def high_unload():
-    intake.spin(REVERSE, 55, VelocityUnits.PERCENT)
-    intake2.spin(REVERSE, 55, VelocityUnits.PERCENT)
-    shoot.spin(REVERSE, 55, VelocityUnits.PERCENT)
+    intake.spin(REVERSE, 65, VelocityUnits.PERCENT)
+    intake2.spin(REVERSE, 65, VelocityUnits.PERCENT)
+    shoot.spin(REVERSE, 65, VelocityUnits.PERCENT)
 
 def high_stop():
     intake.stop()
@@ -83,44 +84,52 @@ def autonomous_right():
     solenoidA.set(False)
 
     intake_in()
-    drive_forward(65, 675)
-    turn_right(20,165)
-    drive_forward(25,1500)
+    drive_forward(65, 650)
+    turn_right(20,180)
+    drive_forward(25,1750)
     motors_stop()
     wait(1000, MSEC)
     intake_stop()
-
-    # grab two and come back
-
+    
     # put one into the low goal
-    turn_left(20, 700)
-    drive_forward(40, 500)
+    drive_reverse(25, 375)
+    turn_left(20, 730)
+    drive_forward(40, 325)
     motors_stop()
+    wait(20, MSEC)
     intake_out()
-    wait(500, MSEC)
+    wait(2000, MSEC)
     intake_stop()
 
     # grab as many as possible from the loader
-    drive_reverse(75, 900)
+    drive_reverse(75, 965)
 
     turn_right(55, 500)
 
-    drive_forward(55, 250)
+    drive_forward(55, 200)
 
-    turn_right(36, 575)
+    turn_right(36, 600)
 
     solenoidA.set(True)
 
     motors_stop()
     intake_in()
-    drive_forward(50, 2000)
+    # drive into loader
+    drive_forward(35, 600)
+    motors_stop()
+    drive_forward(100, 1000)
+    motors_stop()
+    drive_forward(72, 250)
 
     motors_stop()
     intake_stop()
     
     # fill the high goal
 
-    drive_reverse(30, 750)
+    drive_reverse(40, 1600)
+    motors_stop()
+    motors_stop()
+    wait(20, MSEC)
     high_unload()
     wait(2000, MSEC)
     high_stop()
@@ -131,9 +140,151 @@ def autonomous_left():
     brain.screen.print("autonomous left side code")
     # place automonous code here
 
+    # pneumatics up, go to center balls and pick up those three
+    solenoidA.set(False)
+
+    intake_in()
+    drive_forward(65, 650)
+    turn_left(20,180)
+    drive_forward(25,1750)
+    motors_stop()
+    wait(1000, MSEC)
+    intake_stop()
+    
+    # put one into the low goal
+    drive_reverse(25, 107)
+    turn_left(20, 725)
+    drive_reverse(40, 325)
+    motors_stop()
+    wait(20, MSEC)
+    high_unload()
+    wait(2000, MSEC)
+    high_stop()
+
+    # grab as many as possible from the loader
+    drive_forward(75, 965)
+
+    turn_right(55, 500)
+
+    drive_forward(55, 45)
+
+    turn_left(36, 600)
+
+    solenoidA.set(True)
+
+    motors_stop()
+    intake_in()
+    # drive into loader
+    drive_forward(35, 600)
+    motors_stop()
+    drive_forward(90, 750)
+    motors_stop()
+    drive_forward(72, 500)
+
+    motors_stop()
+    intake_stop()
+    
+    # fill the high goal
+
+    drive_reverse(40, 1600)
+    motors_stop()
+    motors_stop()
+    wait(20, MSEC)
+    high_unload()
+    wait(2000, MSEC)
+    high_stop()
+
+def autonomous_skills_new():
+    drive_reverse(100, 2000)
+    motors_stop()
+
 
 def autonomous_skills():
-    pass
+    brain.screen.clear_screen()
+    brain.screen.print("autonomous skills")
+    # place automonous code here
+
+    # pneumatics up, go to center balls and pick up those three
+    solenoidA.set(False)
+
+    intake_in()
+    drive_forward(65, 650)
+    turn_right(20,180)
+    drive_forward(25,1750)
+    motors_stop()
+    wait(1000, MSEC)
+    intake_stop()
+    
+    # put one into the low goal
+    drive_reverse(25, 375)
+    turn_left(20, 725)
+    drive_forward(40, 325)
+    motors_stop()
+    wait(20, MSEC)
+    intake_out()
+    wait(2000, MSEC)
+    intake_stop()
+
+    # grab as many as possible from the loader
+    drive_reverse(75, 965)
+
+    turn_right(55, 500)
+
+    drive_forward(55, 170)
+
+    turn_right(36, 600)
+
+    solenoidA.set(True)
+
+    motors_stop()
+    intake_in()
+    # drive into loader
+    drive_forward(35, 600)
+    motors_stop()
+    drive_forward(90, 1000)
+    motors_stop()
+    drive_forward(72, 1500)
+
+    motors_stop()
+    intake_stop()
+    
+    # fill the high goal
+
+    drive_reverse(40, 1600)
+    motors_stop()
+    motors_stop()
+    wait(20, MSEC)
+    high_unload()
+    wait(2000, MSEC)
+    high_stop()
+
+    # matchloader pt 2
+
+    drive_forward(35, 800)
+    motors_stop()
+    intake_in()
+    drive_forward(90, 1000)
+    motors_stop()
+    drive_forward(72, 1500)
+    motors_stop()
+
+    drive_reverse(40, 1600)
+    motors_stop()
+    motors_stop()
+    wait(20, MSEC)
+    high_unload()
+    wait(2000, MSEC)
+    high_stop()
+
+
+    # # go to other match loader
+    # drive_forward(30, 750)
+    # turn_right(36, 500)
+    # drive_forward(100, 2500)
+    # turn_left(36, 500)
+
+    # drive into matchloader and unload
+    
 
 def user_control():
     global loaderDown
@@ -177,7 +328,7 @@ def user_control():
         elif controller.buttonR1.pressing():
             direction2 = DirectionType.REVERSE
             intake_speed = 100
-            intake2_speed = 100
+            intake2_speed = 85
 
         intake.spin(direction2, intake_speed, VelocityUnits.PERCENT)
         intake2.spin(direction2, intake2_speed, VelocityUnits.PERCENT)
@@ -192,9 +343,8 @@ def user_control():
         wait(20, MSEC)
 
 # create competition instance
-# comp = Competition(user_control, autonomous_right)
+comp = Competition(user_control, autonomous_right)
 
 # actions to do when the program starts
-brain.screen.clear_screen()
-# autonomous_right()
-user_control()
+while True:
+    wait(100, MSEC)
